@@ -200,9 +200,9 @@ public class StreamTest {
     @Test
     public void LongHuBangTracking() {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(2015, Calendar.DECEMBER, 1);
+        calendar.set(2020, Calendar.DECEMBER, 1);
         Date from = calendar.getTime();
-        calendar.set(2015, Calendar.DECEMBER, 7);
+        calendar.set(2021, Calendar.JANUARY, 20);
         Date to = calendar.getTime();
         DateRangeCollector collector = new DateRangeCollector(from, to);
         DateToLongHuBangStockMapper mapper = new DateToLongHuBangStockMapper();
@@ -211,7 +211,7 @@ public class StreamTest {
                 .parallelStream()
                 .map(mapper)
                 .flatMap(List::stream).map(mapper1)
-                .filter(x -> x.bizsunitInBuyList("溧阳路", true))
+                .filter(x -> x.bizsunitInBuyList("路", true))
                 .sorted(Comparator.comparing(LongHuBangInfo::getDate))
                 .collect(Collectors.toList());
         for (LongHuBangInfo info : s) {
@@ -223,12 +223,12 @@ public class StreamTest {
     // 某只股票下的热帖过滤出大V评论
     @Test
     public void CommentReduce() {
-        List<PostInfo> sh688180 = new StockCommentCollector("SH688180", StockCommentCollector.SortType.alpha, 1, 10)
+        List<PostInfo> sh603399 = new StockCommentCollector("SH603399", StockCommentCollector.SortType.alpha, 1, 10)
                 .get()
                 .stream()
                 .map(new CommentSetMapper<>())
                 .collect(Collectors.toList());
-        for (PostInfo postInfo : sh688180) {
+        for (PostInfo postInfo : sh603399) {
             for (Comment comment : postInfo.getComments()) {
                 if (Integer.parseInt(comment.getUser().getFollowers_count()) > 10000) {
                     System.out.println(comment.getText());

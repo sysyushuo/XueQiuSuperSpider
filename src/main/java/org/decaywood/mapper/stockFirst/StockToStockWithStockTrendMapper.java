@@ -70,14 +70,15 @@ public class StockToStockWithStockTrendMapper extends AbstractMapper<Stock, Stoc
         RequestParaBuilder builder = new RequestParaBuilder(target)
                 .addParameter("symbol", stock.getStockNo())
                 .addParameter("period", period.toString())
-                .addParameter("type", "normal")
+                .addParameter("type", "before")
                 .addParameter("begin", from.getTime())
-                .addParameter("end", to.getTime());
+                .addParameter("end", to.getTime())
+                .addParameter("indicator","kline,pe,pb,ps,pcf,market_capital,agt,ggt,balance,macd,ma,ema,kdj");
 
         URL url = new URL(builder.build());
 
         String json = request(url);
-        JsonNode node = mapper.readTree(json).get("chartlist");
+        JsonNode node = mapper.readTree(json).get("data").get("item");
         processStock(stock, node);
         return stock;
 
@@ -90,22 +91,22 @@ public class StockToStockWithStockTrendMapper extends AbstractMapper<Stock, Stoc
 
         for (JsonNode jsonNode : node) {
 
-            String volume = jsonNode.get("volume").asText();
-            String open = jsonNode.get("open").asText();
-            String high = jsonNode.get("high").asText();
-            String close = jsonNode.get("close").asText();
-            String low = jsonNode.get("low").asText();
-            String chg = jsonNode.get("chg").asText();
-            String percent = jsonNode.get("percent").asText();
-            String turnrate = jsonNode.get("turnrate").asText();
-            String ma5 = jsonNode.get("ma5").asText();
-            String ma10 = jsonNode.get("ma10").asText();
-            String ma20 = jsonNode.get("ma20").asText();
-            String ma30 = jsonNode.get("ma30").asText();
-            String dif = jsonNode.get("dif").asText();
-            String dea = jsonNode.get("dea").asText();
-            String macd = jsonNode.get("macd").asText();
-            String time = jsonNode.get("time").asText();
+            String volume = jsonNode.get(1).asText();
+            String open = jsonNode.get(2).asText();
+            String high = jsonNode.get(3).asText();
+            String close = jsonNode.get(4).asText();
+            String low = jsonNode.get(5).asText();
+            String chg = jsonNode.get(6).asText();
+            String percent = jsonNode.get(7).asText();
+            String turnrate = jsonNode.get(8).asText();
+            String ma5 = jsonNode.get(12).asText();
+            String ma10 = jsonNode.get(13).asText();
+            String ma20 = jsonNode.get(14).asText();
+            String ma30 = jsonNode.get(15).asText();
+            String dif = jsonNode.get(17).asText();
+            String dea = jsonNode.get(16).asText();
+            String macd = jsonNode.get(18).asText();
+            String time = jsonNode.get(0).asText();
 
             TrendBlock block = new TrendBlock(
                     volume, open, high, close, low, chg, percent, turnrate,

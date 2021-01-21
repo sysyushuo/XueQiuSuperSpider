@@ -16,7 +16,7 @@ public class PageKeyFilterTest {
 
     @Test
     public void testFunc() throws Exception {
-        URL url = new URL("http://xueqiu.com/2306062563/60965010");
+        URL url = new URL("https://xueqiu.com/u/2306062563#/stock");
         PageKeyFilter filter = new PageKeyFilter("协鑫集成", true);
         boolean res = filter.test(url);
         System.out.println(res);

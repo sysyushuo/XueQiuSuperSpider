@@ -17,14 +17,14 @@ public class CommissionIndustryCollectorTest {
     public void test() throws Exception {
         CommissionIndustryCollector commissionIndustryCollector = new CommissionIndustryCollector();
         List<Industry> list = commissionIndustryCollector.collectLogic();
-        Assert.assertEquals(list.size(), 77);
+        Assert.assertEquals(list.size(), 104);
     }
 
     @Test
     public void testNull() throws Exception {
         CommissionIndustryCollector commissionIndustryCollector = new CommissionIndustryCollector(null);
         List<Industry> list = commissionIndustryCollector.collectLogic();
-        Assert.assertEquals(list.size(), 77);
+        Assert.assertEquals(list.size(), 104);
     }
 
 }

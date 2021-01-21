@@ -18,7 +18,9 @@ public class StockToStockWithStockTrendMapperTest {
     public void testFunc() {
         StockToStockWithStockTrendMapper mapper = new StockToStockWithStockTrendMapper();
         List<Stock> stocks = TestCaseGenerator.generateStocks();
-        boolean res = stocks.stream().map(mapper.andThen(Stock::getStockTrend)).noneMatch(x -> x.getHistory().isEmpty());
+        boolean res = stocks.stream()
+                .map(mapper.andThen(Stock::getStockTrend))
+                .noneMatch(x -> x.getHistory().isEmpty());
         Assert.assertTrue(res);
     }
 }

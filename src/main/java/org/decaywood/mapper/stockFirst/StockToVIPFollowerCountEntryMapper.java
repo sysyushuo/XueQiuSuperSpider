@@ -6,6 +6,7 @@ import org.decaywood.entity.Stock;
 import org.decaywood.mapper.AbstractMapper;
 import org.decaywood.timeWaitingStrategy.TimeWaitingStrategy;
 import org.decaywood.utils.EmptyObject;
+import org.decaywood.utils.RequestParaBuilder;
 import org.decaywood.utils.URLMapper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,8 +26,8 @@ import java.rmi.RemoteException;
  */
 public class StockToVIPFollowerCountEntryMapper extends AbstractMapper <Stock, Entry<Stock, Integer>> {
 
-    private static final String REQUEST_PREFIX = URLMapper.MAIN_PAGE + "/S/";
-    private static final String REQUEST_SUFFIX = "/follows?page=";
+//    private static final String REQUEST_PREFIX = URLMapper.MAIN_PAGE + "/S/";
+//    private static final String REQUEST_SUFFIX = "/follows?page=";
 
 
     private int VIPFriendsCountShreshold;
@@ -66,16 +67,27 @@ public class StockToVIPFollowerCountEntryMapper extends AbstractMapper <Stock, E
 
         int count = 0;
 
-        for (int i = 1; i < latestK_NewFollowers; i++) {
+        String target = URLMapper.FOLLOWER_JSON.toString();
+        RequestParaBuilder builder = new RequestParaBuilder(target)
+                .addParameter("symbol",stockNo)
+                .addParameter("page",1)
+                .addParameter("size",20)
+                .addParameter("anonymous_filter",true);
+        URL url = new URL(builder.build());
+        String content_tmp = request(url);
+        JsonNode node = mapper.readTree(content_tmp).get("data").get("followers");
 
-            String reqUrl = REQUEST_PREFIX + stockNo + REQUEST_SUFFIX + i;
-            URL url = new URL(reqUrl);
-
+        for (int i = 0; i < node.size()-1; i++) {
+            String target_in = URLMapper.FRIEND_FOLLOWER_JSON.toString();
+            RequestParaBuilder builder_in = new RequestParaBuilder(target_in)
+                    .addParameter("uid",node.get(i).toString())
+                    .addParameter("pageNo",1);
+            URL url_in = new URL(builder_in.build());
             String content;
             while (true) {
                 try {
 
-                    content = request(url);
+                    content = request(url_in);
                     break;
 
                 } catch (Exception e) {
@@ -83,15 +95,16 @@ public class StockToVIPFollowerCountEntryMapper extends AbstractMapper <Stock, E
                 }
             }
 
-            JsonNode node = parseHtmlToJsonNode(content).get("followers");
-
-            if(node.size() == 0) break;
-
-            for (JsonNode jsonNode : node) {
-                int followersCount = jsonNode.get("followers_count").asInt();
-                if(followersCount > VIPFriendsCountShreshold) count++;
-            }
-
+//            JsonNode node_in = mapper.readTree(content).get("count");
+//
+//            if(node_in.size() == 0) break;
+//
+//            for (JsonNode jsonNode : node) {
+//                int followersCount = jsonNode.get("count").asInt();
+//                if(followersCount > VIPFriendsCountShreshold) count++;
+//            }
+            Integer node_in = mapper.readTree(content).get("count").asInt();
+            if(node_in> VIPFriendsCountShreshold) count++;
         }
 
         return new Entry<>(stock, count);

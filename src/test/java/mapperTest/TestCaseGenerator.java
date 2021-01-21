@@ -15,10 +15,8 @@ public class TestCaseGenerator {
 
     public static List<Industry> generateIndustries() {
         List<Industry> industries = new ArrayList<>();
-        industries.add(new Industry("有色金属冶炼和压延加工业","#exchange=CN&plate=1_3_66&firstName=1&secondName=1_3&level2code=C32"));
-        industries.add(new Industry("渔业","#exchange=CN&plate=1_3_67&firstName=1&secondName=1_3&level2code=A04"));
-        industries.add(new Industry("医药制造业","#exchange=CN&plate=1_3_68&firstName=1&secondName=1_3&level2code=C27"));
-        industries.add(new Industry("资本市场服务","#exchange=CN&plate=1_3_69&firstName=1&secondName=1_3&level2code=J67"));
+        industries.add(new Industry(" 白色家电","exchange=CN&plate=1_2_32&firstName=1&secondName=1_2&level2code=S3301"));
+        industries.add(new Industry("半导体","#exchange=CN&plate=1_2_23&firstName=1&secondName=1_2&level2code=S2701"));
         return industries;
     }
 

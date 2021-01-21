@@ -53,11 +53,8 @@ public class StockToStockWithCompanyInfoMapper extends AbstractMapper <Stock, St
 
         String content = request(new URL(target));
         Document doc = Jsoup.parse(content);
-        Elements element = doc.getElementsByClass("second-nav")
-                .get(1).children()
-                .get(3).children()
-                .get(3).children()
-                .select("a");
+        Elements element = doc.getElementsByClass("third-nav")
+                          .select("a");
         StringBuilder builder = new StringBuilder();
         for (Element ele : element) {
             if (!ele.hasAttr("title") || !ele.hasAttr("href")) continue;

@@ -12,9 +12,9 @@ public class StockTrend extends Trend<StockTrend.TrendBlock, StockTrend> {
     public enum Period
 
     {
-        DAY("1day"),
-        WEEK("1week"),
-        MONTH("1month");
+        DAY("day"),
+        WEEK("week"),
+        MONTH("month");
 
         private String val;
 
