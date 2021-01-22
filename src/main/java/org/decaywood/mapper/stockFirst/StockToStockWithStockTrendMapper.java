@@ -50,10 +50,11 @@ public class StockToStockWithStockTrendMapper extends AbstractMapper<Stock, Stoc
         if (from == null || to == null) {
             Calendar calendar = Calendar.getInstance();
             this.to = new Date();
-//            calendar.setTime(this.to);
-//            calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) - 5);
-            calendar.set(2000,1,1);
+            calendar.setTime(this.to);
+            calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) - 1);
+//            calendar.set(2000,1,1);
             this.from = calendar.getTime();
+
         } else {
             this.from = from;
             this.to = to;
