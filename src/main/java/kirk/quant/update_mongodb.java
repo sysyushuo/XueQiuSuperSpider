@@ -13,6 +13,8 @@ import com.mongodb.client.MongoDatabase;
 import org.decaywood.entity.Stock;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 import static com.mongodb.client.model.Filters.gte;
@@ -27,15 +29,25 @@ class MongoDBUtilities {
     public static MongoCollection<Document> connect_to_collection(String collection_name,MongoDatabase mongoDatabase){
         return mongoDatabase.getCollection(collection_name);
     }
-
-
-
-
-    public static <e> void main(String args[]) {
+    public static void delet_day(String time){
+        String name="quant";
+        MongoDatabase mongoDatabase = connect_to_mongodb(name);
+        String collection_name="snowball_stock_daily";
+        MongoCollection<Document> conn = connect_to_collection(collection_name,mongoDatabase);
+        Bson query = Filters.eq("time", time);
+        conn.deleteMany(query);
+    }
+    public static void update_day(){
         MongoClient mongoClient=null;
         List<Stock> stocks=new ArrayList<Stock>();
-        StockToStockWithStockTrendMapper mapper = new StockToStockWithStockTrendMapper();
 
+        Calendar calendar = Calendar.getInstance();
+        Date to = new Date();
+        calendar.setTime(to);
+        calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) - 1);
+        Date from = calendar.getTime();
+
+        StockToStockWithStockTrendMapper mapper = new StockToStockWithStockTrendMapper(StockTrend.Period.DAY,from,to);
         try {
             String name="quant";
             MongoDatabase mongoDatabase = connect_to_mongodb(name);
@@ -54,42 +66,168 @@ class MongoDBUtilities {
             MongoCollection<Document> conn = connect_to_collection(collection_name,mongoDatabase);
 
 
-//            Bson query = Filters.eq("time", "1611244800000");
-//
-//            conn.deleteMany(query);
-
             Stream<StockTrend> res = stocks.stream()
                     .map(mapper.andThen(Stock::getStockTrend));
 
             res.forEach(x->{
-                        Document object=new Document();
-                        x.getHistory().forEach(trend->{
-                            object.put("code", x.getStockNo());
-                            object.put("open",trend.getOpen());
-                            object.put("close", trend.getClose());
-                            object.put("high",trend.getHigh());
-                            object.put("low",trend.getLow());
-                            object.put("ma5",trend.getMa5());
-                            object.put("ma10",trend.getMa10());
-                            object.put("ma20",trend.getMa20());
-                            object.put("ma30",trend.getMa30());
-                            object.put("dea",trend.getDea());
-                            object.put("dif",trend.getDif());
-                            object.put("macd",trend.getMacd());
-                            object.put("chg",trend.getChg());
-                            object.put("percent",trend.getPercent());
-                            object.put("time",trend.getTime());
-                            object.put("turnrate",trend.getTurnrate());
-                            object.put("volume",trend.getVolume());
+                Document object=new Document();
+                x.getHistory().forEach(trend->{
+                    object.put("code", x.getStockNo());
+                    object.put("open",trend.getOpen());
+                    object.put("close", trend.getClose());
+                    object.put("high",trend.getHigh());
+                    object.put("low",trend.getLow());
+                    object.put("ma5",trend.getMa5());
+                    object.put("ma10",trend.getMa10());
+                    object.put("ma20",trend.getMa20());
+                    object.put("ma30",trend.getMa30());
+                    object.put("dea",trend.getDea());
+                    object.put("dif",trend.getDif());
+                    object.put("macd",trend.getMacd());
+                    object.put("chg",trend.getChg());
+                    object.put("percent",trend.getPercent());
+                    object.put("time",trend.getTime());
+                    object.put("turnrate",trend.getTurnrate());
+                    object.put("volume",trend.getVolume());
 
-                            conn.insertOne( object);
-                            object.clear();
-                        });
-                    System.out.println("insert "+x.getStockNo()+" done");
+                    conn.insertOne( object);
+                    object.clear();
+                });
+                System.out.println("insert "+x.getStockNo()+" day done");
             });
         }
         catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
+    }
+
+    public static void update_week(){
+        MongoClient mongoClient=null;
+        List<Stock> stocks=new ArrayList<Stock>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2000,1,1);
+        Date from = calendar.getTime();
+        Date to = new Date();
+
+        StockToStockWithStockTrendMapper mapper = new StockToStockWithStockTrendMapper(StockTrend.Period.WEEK,  from,  to);
+        try {
+            String name="quant";
+            MongoDatabase mongoDatabase = connect_to_mongodb(name);
+            System.out.println("Connect to database successfully");
+            MongoCollection<Document> collection = connect_to_collection("ts-stock_basic",mongoDatabase);
+
+            FindIterable<Document> findIterable = collection.find();
+            MongoCursor<Document> mongoCursor = findIterable.iterator();
+            while (mongoCursor.hasNext()) {
+                Document tmp = mongoCursor.next();
+                String[ ] tmp_str=tmp.getString("ts_code").split("\\.");
+                stocks.add(new Stock(tmp.getString("name"),(tmp_str[1]+tmp_str[0]) ));
+            }
+
+            String collection_name="snowball_stock_week";
+            MongoCollection<Document> conn = connect_to_collection(collection_name,mongoDatabase);
+
+
+            Stream<StockTrend> res = stocks.stream()
+                    .map(mapper.andThen(Stock::getStockTrend));
+
+            res.forEach(x->{
+                Document object=new Document();
+                x.getHistory().forEach(trend->{
+                    object.put("code", x.getStockNo());
+                    object.put("open",trend.getOpen());
+                    object.put("close", trend.getClose());
+                    object.put("high",trend.getHigh());
+                    object.put("low",trend.getLow());
+                    object.put("ma5",trend.getMa5());
+                    object.put("ma10",trend.getMa10());
+                    object.put("ma20",trend.getMa20());
+                    object.put("ma30",trend.getMa30());
+                    object.put("dea",trend.getDea());
+                    object.put("dif",trend.getDif());
+                    object.put("macd",trend.getMacd());
+                    object.put("chg",trend.getChg());
+                    object.put("percent",trend.getPercent());
+                    object.put("time",trend.getTime());
+                    object.put("turnrate",trend.getTurnrate());
+                    object.put("volume",trend.getVolume());
+
+                    conn.insertOne( object);
+                    object.clear();
+                });
+                System.out.println("insert "+x.getStockNo()+" week done");
+            });
+        }
+        catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+    }
+
+    public static void update_month(){
+        MongoClient mongoClient=null;
+        List<Stock> stocks=new ArrayList<Stock>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2000,1,1);
+        Date from = calendar.getTime();
+        Date to = new Date();
+
+        StockToStockWithStockTrendMapper mapper = new StockToStockWithStockTrendMapper(StockTrend.Period.MONTH,  from,  to);
+        try {
+            String name="quant";
+            MongoDatabase mongoDatabase = connect_to_mongodb(name);
+            System.out.println("Connect to database successfully");
+            MongoCollection<Document> collection = connect_to_collection("ts-stock_basic",mongoDatabase);
+
+            FindIterable<Document> findIterable = collection.find();
+            MongoCursor<Document> mongoCursor = findIterable.iterator();
+            while (mongoCursor.hasNext()) {
+                Document tmp = mongoCursor.next();
+                String[ ] tmp_str=tmp.getString("ts_code").split("\\.");
+                stocks.add(new Stock(tmp.getString("name"),(tmp_str[1]+tmp_str[0]) ));
+            }
+
+            String collection_name="snowball_stock_month";
+            MongoCollection<Document> conn = connect_to_collection(collection_name,mongoDatabase);
+
+
+            Stream<StockTrend> res = stocks.stream()
+                    .map(mapper.andThen(Stock::getStockTrend));
+
+            res.forEach(x->{
+                Document object=new Document();
+                x.getHistory().forEach(trend->{
+                    object.put("code", x.getStockNo());
+                    object.put("open",trend.getOpen());
+                    object.put("close", trend.getClose());
+                    object.put("high",trend.getHigh());
+                    object.put("low",trend.getLow());
+                    object.put("ma5",trend.getMa5());
+                    object.put("ma10",trend.getMa10());
+                    object.put("ma20",trend.getMa20());
+                    object.put("ma30",trend.getMa30());
+                    object.put("dea",trend.getDea());
+                    object.put("dif",trend.getDif());
+                    object.put("macd",trend.getMacd());
+                    object.put("chg",trend.getChg());
+                    object.put("percent",trend.getPercent());
+                    object.put("time",trend.getTime());
+                    object.put("turnrate",trend.getTurnrate());
+                    object.put("volume",trend.getVolume());
+
+                    conn.insertOne( object);
+                    object.clear();
+                });
+                System.out.println("insert "+x.getStockNo()+" month done");
+            });
+        }
+        catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+    }
+
+
+    public static void main(String args[]) {
+//        update_day();
+        update_week();
     }
 }
