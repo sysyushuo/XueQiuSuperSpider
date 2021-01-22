@@ -17,7 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
-import static com.mongodb.client.model.Filters.gte;
+
 
 class MongoDBUtilities {
     public static  MongoDatabase connect_to_mongodb(String name){
@@ -227,7 +227,8 @@ class MongoDBUtilities {
 
 
     public static void main(String args[]) {
-//        update_day();
-        update_week();
+        update_day();
+//        update_week();
+//        update_month();
     }
 }
