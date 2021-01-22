@@ -14,6 +14,15 @@ import java.util.List;
 import java.util.stream.Stream;
 
 class MongoDBUtilities {
+    public static  MongoDatabase connect_to_mongodb(String name){
+        MongoClient mongoClient = new MongoClient();
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(name);
+        return mongoDatabase;
+    }
+
+    public static MongoCollection<Document> connect_to_collection(String collection_name,MongoDatabase mongoDatabase){
+        return mongoDatabase.getCollection(collection_name);
+    }
 
     public static void main(String args[]) {
         MongoClient mongoClient=null;
@@ -21,12 +30,11 @@ class MongoDBUtilities {
         StockToStockWithStockTrendMapper mapper = new StockToStockWithStockTrendMapper();
 
         try {
-            mongoClient = new MongoClient();
-            MongoDatabase mongoDatabase = mongoClient.getDatabase("quant");
+            String name="quant";
+            MongoDatabase mongoDatabase = connect_to_mongodb(name);
             System.out.println("Connect to database successfully");
-            MongoCollection<Document> collection = mongoDatabase
-                    .getCollection("ts-stock_basic");
-            // insert(collection);
+            MongoCollection<Document> collection = connect_to_collection("ts-stock_basic",mongoDatabase);
+
             FindIterable<Document> findIterable = collection.find();
             MongoCursor<Document> mongoCursor = findIterable.iterator();
             while (mongoCursor.hasNext()) {
@@ -35,8 +43,8 @@ class MongoDBUtilities {
                 stocks.add(new Stock(tmp.getString("name"),(tmp_str[1]+tmp_str[0]) ));
             }
 
-            MongoCollection<Document> conn = mongoDatabase
-                    .getCollection("snowball_stock_daily");
+            String collection_name="snowball_stock_daily";
+            MongoCollection<Document> conn = connect_to_collection(collection_name,mongoDatabase);
 
             Stream<StockTrend> res = stocks.stream()
                     .map(mapper.andThen(Stock::getStockTrend));
