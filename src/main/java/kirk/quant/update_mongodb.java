@@ -118,7 +118,7 @@ class MongoDBUtilities {
     }
 
     public static void update_week(){
-
+        //上次更新时间为20210122
         List<Stock> stocks=generate_stock_list();
         Calendar calendar = Calendar.getInstance();
         calendar.set(2000,1,1);
@@ -170,6 +170,7 @@ class MongoDBUtilities {
     }
 
     public static void update_month(){
+        //上次更新时间为20210122
         MongoClient mongoClient=null;
         List<Stock> stocks=generate_stock_list();
         Calendar calendar = Calendar.getInstance();
@@ -263,10 +264,10 @@ class MongoDBUtilities {
 
 
     public static void main(String args[]) {
-//        update_day();
+        update_day();
+        update_capital_flow();
 //        update_week();
 //        update_month();
-        update_capital_flow();
 //        String collection_name="snowball_stock_capital_daily";
 //        delet_day(collection_name,timeToStamp());
     }
