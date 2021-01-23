@@ -2,9 +2,11 @@ package kirk.quant;
 
 import com.mongodb.client.model.Filters;
 import org.bson.conversions.Bson;
+import org.decaywood.collector.CommissionIndustryCollector;
 import org.decaywood.entity.CapitalFlow;
 import org.decaywood.entity.Entry;
 import org.decaywood.entity.trend.StockTrend;
+import org.decaywood.mapper.industryFirst.IndustryToStocksMapper;
 import org.decaywood.mapper.stockFirst.StockToCapitalFlowEntryMapper;
 import org.decaywood.mapper.stockFirst.StockToStockWithStockTrendMapper;
 import org.bson.Document;
@@ -16,6 +18,8 @@ import com.mongodb.client.MongoDatabase;
 import org.decaywood.entity.Stock;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 
@@ -37,8 +41,8 @@ class MongoDBUtilities {
         conn.deleteMany(query);
     }
 
-    public static String timeToStamp() {
-        long current = System.currentTimeMillis();
+    public static String timeToStamp(long date) {
+        long current = date;
         long theDay= current - (current + TimeZone.getDefault().getRawOffset()) % (1000 * 3600 * 24);
         return String.valueOf(theDay);
     }
@@ -216,39 +220,54 @@ class MongoDBUtilities {
         }
     }
     public static void update_capital_flow(){
-        StockToCapitalFlowEntryMapper mapper = new StockToCapitalFlowEntryMapper();
-        List<Stock> stocks=generate_stock_list();
+        Calendar cal=Calendar.getInstance();
+        cal.add(Calendar.DATE,-1);
+        long yeasterday=cal.getTime().getTime();
+        
+
         String name="quant";
         MongoDatabase mongoDatabase = connect_to_mongodb(name);
 
         String collection_name="snowball_stock_capital_daily";
         MongoCollection<Document> conn = connect_to_collection(collection_name,mongoDatabase);
 
-        Stream<Entry<Stock, CapitalFlow>> res = stocks.stream().map(mapper);
-        res.forEach(x->{
-            Document object=new Document();
-            object.put("code",x.getKey().getStockNo());
-            object.put("capitalInflow",x.getValue().getCapitalInflow());
-            object.put("largeQuantity",x.getValue().getLargeQuantity());
-            object.put("midQuantity",x.getValue().getMidQuantity());
-            object.put("smallQuantity",x.getValue().getSmallQuantity());
-            object.put("largeQuantBuy",x.getValue().getLargeQuantity());
-            object.put("largeQuantSell",x.getValue().getLargeQuantSell());
-            object.put("largeQuantDealProp",x.getValue().getLargeQuantDealProp());
-            object.put("fiveDayInflow",x.getValue().getFiveDayInflow());
-            object.put("time",timeToStamp());
-            conn.insertOne( object);
-            object.clear();
-            System.out.println("insert "+x.getKey().getStockNo()+" capital done");
-        });
+        CommissionIndustryCollector collector = new CommissionIndustryCollector();
+        IndustryToStocksMapper mapper = new IndustryToStocksMapper();
+        StockToCapitalFlowEntryMapper mapper1 = new StockToCapitalFlowEntryMapper();
+
+        collector.get()
+                .parallelStream()
+                .map(mapper)
+                .flatMap(Collection::stream)
+                .map(mapper1)
+                .forEach(x-> {
+                    Document object=new Document();
+                    object.put("industry",x.getKey().getIndustry().getIndustryName());
+                    object.put("code",x.getKey().getStockNo());
+                    object.put("capitalInflow",x.getValue().getCapitalInflow());
+                    object.put("largeQuantity",x.getValue().getLargeQuantity());
+                    object.put("midQuantity",x.getValue().getMidQuantity());
+                    object.put("smallQuantity",x.getValue().getSmallQuantity());
+                    object.put("largeQuantBuy",x.getValue().getLargeQuantity());
+                    object.put("largeQuantSell",x.getValue().getLargeQuantSell());
+                    object.put("largeQuantDealProp",x.getValue().getLargeQuantDealProp());
+                    object.put("fiveDayInflow",x.getValue().getFiveDayInflow());
+                    object.put("time",timeToStamp(yeasterday));
+                    conn.insertOne( object);
+                    object.clear();
+                    System.out.println("insert "+x.getKey().getStockNo()+" capital done");
+                });
     }
+
+
+
 
     public static void main(String args[]) {
 //        update_day();
 //        update_week();
 //        update_month();
-//        update_capital_flow();
-        String collection_name="snowball_stock_capital_daily";
-        delet_day(collection_name,timeToStamp());
+        update_capital_flow();
+//        String collection_name="snowball_stock_capital_daily";
+//        delet_day(collection_name,timeToStamp());
     }
 }

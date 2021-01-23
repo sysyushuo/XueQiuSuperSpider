@@ -59,10 +59,12 @@ public class IndustryToStocksMapper extends AbstractMapper<Industry, List<Stock>
         builder.addParameter("_", System.currentTimeMillis());
         URL url = new URL(builder.build());
 
-        String json = request(url);
+        String json = requestWithoutGzip(url);
+//        System.out.println(url);
         JsonNode jsonNode = mapper.readTree(json);
 
-        return parserJson(jsonNode,industry);
+        return parserJson(jsonNode, industry);
+
 
     }
 
