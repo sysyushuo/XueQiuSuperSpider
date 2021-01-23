@@ -62,18 +62,19 @@ public class IndustryToStocksMapper extends AbstractMapper<Industry, List<Stock>
         String json = request(url);
         JsonNode jsonNode = mapper.readTree(json);
 
-        return parserJson(jsonNode);
+        return parserJson(jsonNode,industry);
 
     }
 
 
-    private List<Stock> parserJson(JsonNode node) {
+    private List<Stock> parserJson(JsonNode node,Industry industry) {
 
         List<Stock> stocks = new ArrayList<>();
 
         JsonNode data = node.get("data");
         for (JsonNode jsonNode : data.get("list")) {
             Stock stock = new Stock(jsonNode.get("name").asText(), jsonNode.get("symbol").asText());
+            stock.setIndustry(industry);
             stocks.add(stock);
         }
         return stocks;

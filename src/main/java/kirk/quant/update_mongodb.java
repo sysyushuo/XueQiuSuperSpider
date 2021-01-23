@@ -2,7 +2,10 @@ package kirk.quant;
 
 import com.mongodb.client.model.Filters;
 import org.bson.conversions.Bson;
+import org.decaywood.entity.CapitalFlow;
+import org.decaywood.entity.Entry;
 import org.decaywood.entity.trend.StockTrend;
+import org.decaywood.mapper.stockFirst.StockToCapitalFlowEntryMapper;
 import org.decaywood.mapper.stockFirst.StockToStockWithStockTrendMapper;
 import org.bson.Document;
 import com.mongodb.MongoClient;
@@ -12,10 +15,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.decaywood.entity.Stock;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 
@@ -29,17 +29,40 @@ class MongoDBUtilities {
     public static MongoCollection<Document> connect_to_collection(String collection_name,MongoDatabase mongoDatabase){
         return mongoDatabase.getCollection(collection_name);
     }
-    public static void delet_day(String time){
+    public static void delet_day(String collection_name,String time){
         String name="quant";
         MongoDatabase mongoDatabase = connect_to_mongodb(name);
-        String collection_name="snowball_stock_daily";
         MongoCollection<Document> conn = connect_to_collection(collection_name,mongoDatabase);
         Bson query = Filters.eq("time", time);
         conn.deleteMany(query);
     }
+
+    public static String timeToStamp() {
+        long current = System.currentTimeMillis();
+        long theDay= current - (current + TimeZone.getDefault().getRawOffset()) % (1000 * 3600 * 24);
+        return String.valueOf(theDay);
+    }
+
+    public static List<Stock> generate_stock_list(){
+        String name="quant";
+        MongoDatabase mongoDatabase = connect_to_mongodb(name);
+        List<Stock> stocks=new ArrayList<Stock>();
+        MongoCollection<Document> collection = connect_to_collection("ts-stock_basic",mongoDatabase);
+
+        FindIterable<Document> findIterable = collection.find();
+        MongoCursor<Document> mongoCursor = findIterable.iterator();
+        while (mongoCursor.hasNext()) {
+            Document tmp = mongoCursor.next();
+            String[ ] tmp_str=tmp.getString("ts_code").split("\\.");
+            stocks.add(new Stock(tmp.getString("name"),(tmp_str[1]+tmp_str[0]) ));
+        }
+        return stocks;
+    }
+
+
     public static void update_day(){
         MongoClient mongoClient=null;
-        List<Stock> stocks=new ArrayList<Stock>();
+        List<Stock> stocks=generate_stock_list();
 
         Calendar calendar = Calendar.getInstance();
         Date to = new Date();
@@ -49,22 +72,11 @@ class MongoDBUtilities {
 
         StockToStockWithStockTrendMapper mapper = new StockToStockWithStockTrendMapper(StockTrend.Period.DAY,from,to);
         try {
+
             String name="quant";
             MongoDatabase mongoDatabase = connect_to_mongodb(name);
-            System.out.println("Connect to database successfully");
-            MongoCollection<Document> collection = connect_to_collection("ts-stock_basic",mongoDatabase);
-
-            FindIterable<Document> findIterable = collection.find();
-            MongoCursor<Document> mongoCursor = findIterable.iterator();
-            while (mongoCursor.hasNext()) {
-                Document tmp = mongoCursor.next();
-                String[ ] tmp_str=tmp.getString("ts_code").split("\\.");
-                stocks.add(new Stock(tmp.getString("name"),(tmp_str[1]+tmp_str[0]) ));
-            }
-
             String collection_name="snowball_stock_daily";
             MongoCollection<Document> conn = connect_to_collection(collection_name,mongoDatabase);
-
 
             Stream<StockTrend> res = stocks.stream()
                     .map(mapper.andThen(Stock::getStockTrend));
@@ -102,8 +114,8 @@ class MongoDBUtilities {
     }
 
     public static void update_week(){
-        MongoClient mongoClient=null;
-        List<Stock> stocks=new ArrayList<Stock>();
+
+        List<Stock> stocks=generate_stock_list();
         Calendar calendar = Calendar.getInstance();
         calendar.set(2000,1,1);
         Date from = calendar.getTime();
@@ -113,16 +125,6 @@ class MongoDBUtilities {
         try {
             String name="quant";
             MongoDatabase mongoDatabase = connect_to_mongodb(name);
-            System.out.println("Connect to database successfully");
-            MongoCollection<Document> collection = connect_to_collection("ts-stock_basic",mongoDatabase);
-
-            FindIterable<Document> findIterable = collection.find();
-            MongoCursor<Document> mongoCursor = findIterable.iterator();
-            while (mongoCursor.hasNext()) {
-                Document tmp = mongoCursor.next();
-                String[ ] tmp_str=tmp.getString("ts_code").split("\\.");
-                stocks.add(new Stock(tmp.getString("name"),(tmp_str[1]+tmp_str[0]) ));
-            }
 
             String collection_name="snowball_stock_week";
             MongoCollection<Document> conn = connect_to_collection(collection_name,mongoDatabase);
@@ -165,7 +167,7 @@ class MongoDBUtilities {
 
     public static void update_month(){
         MongoClient mongoClient=null;
-        List<Stock> stocks=new ArrayList<Stock>();
+        List<Stock> stocks=generate_stock_list();
         Calendar calendar = Calendar.getInstance();
         calendar.set(2000,1,1);
         Date from = calendar.getTime();
@@ -175,20 +177,9 @@ class MongoDBUtilities {
         try {
             String name="quant";
             MongoDatabase mongoDatabase = connect_to_mongodb(name);
-            System.out.println("Connect to database successfully");
-            MongoCollection<Document> collection = connect_to_collection("ts-stock_basic",mongoDatabase);
-
-            FindIterable<Document> findIterable = collection.find();
-            MongoCursor<Document> mongoCursor = findIterable.iterator();
-            while (mongoCursor.hasNext()) {
-                Document tmp = mongoCursor.next();
-                String[ ] tmp_str=tmp.getString("ts_code").split("\\.");
-                stocks.add(new Stock(tmp.getString("name"),(tmp_str[1]+tmp_str[0]) ));
-            }
 
             String collection_name="snowball_stock_month";
             MongoCollection<Document> conn = connect_to_collection(collection_name,mongoDatabase);
-
 
             Stream<StockTrend> res = stocks.stream()
                     .map(mapper.andThen(Stock::getStockTrend));
@@ -224,11 +215,40 @@ class MongoDBUtilities {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
     }
+    public static void update_capital_flow(){
+        StockToCapitalFlowEntryMapper mapper = new StockToCapitalFlowEntryMapper();
+        List<Stock> stocks=generate_stock_list();
+        String name="quant";
+        MongoDatabase mongoDatabase = connect_to_mongodb(name);
 
+        String collection_name="snowball_stock_capital_daily";
+        MongoCollection<Document> conn = connect_to_collection(collection_name,mongoDatabase);
+
+        Stream<Entry<Stock, CapitalFlow>> res = stocks.stream().map(mapper);
+        res.forEach(x->{
+            Document object=new Document();
+            object.put("code",x.getKey().getStockNo());
+            object.put("capitalInflow",x.getValue().getCapitalInflow());
+            object.put("largeQuantity",x.getValue().getLargeQuantity());
+            object.put("midQuantity",x.getValue().getMidQuantity());
+            object.put("smallQuantity",x.getValue().getSmallQuantity());
+            object.put("largeQuantBuy",x.getValue().getLargeQuantity());
+            object.put("largeQuantSell",x.getValue().getLargeQuantSell());
+            object.put("largeQuantDealProp",x.getValue().getLargeQuantDealProp());
+            object.put("fiveDayInflow",x.getValue().getFiveDayInflow());
+            object.put("time",timeToStamp());
+            conn.insertOne( object);
+            object.clear();
+            System.out.println("insert "+x.getKey().getStockNo()+" capital done");
+        });
+    }
 
     public static void main(String args[]) {
-        update_day();
+//        update_day();
 //        update_week();
 //        update_month();
+//        update_capital_flow();
+        String collection_name="snowball_stock_capital_daily";
+        delet_day(collection_name,timeToStamp());
     }
 }

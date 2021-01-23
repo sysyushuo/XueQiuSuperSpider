@@ -23,6 +23,7 @@ public abstract class AbstractMapper <T, R> extends AbstractRequester implements
     protected abstract R mapLogic(T t) throws Exception;
 
 
+
     public AbstractMapper(TimeWaitingStrategy strategy) {
         this(strategy, URLMapper.MAIN_PAGE.toString());
     }

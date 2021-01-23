@@ -456,5 +456,4 @@ public class Stock implements DeepCopy<Stock> {
         return stock;
     }
 
-
 }
