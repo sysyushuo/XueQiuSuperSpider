@@ -3,8 +3,6 @@ package kirk.quant;
 import com.mongodb.client.model.Filters;
 import org.bson.conversions.Bson;
 import org.decaywood.collector.CommissionIndustryCollector;
-import org.decaywood.entity.CapitalFlow;
-import org.decaywood.entity.Entry;
 import org.decaywood.entity.trend.StockTrend;
 import org.decaywood.mapper.industryFirst.IndustryToStocksMapper;
 import org.decaywood.mapper.stockFirst.StockToCapitalFlowEntryMapper;
@@ -18,8 +16,6 @@ import com.mongodb.client.MongoDatabase;
 import org.decaywood.entity.Stock;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 
