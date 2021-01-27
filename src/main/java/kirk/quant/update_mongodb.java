@@ -258,7 +258,7 @@ class MongoDBUtilities {
 
 
     public static void main(String args[]) {
-//        update_day();
+        update_day();
         update_capital_flow();
 //        update_week();
 //        update_month();
