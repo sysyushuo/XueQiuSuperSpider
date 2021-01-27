@@ -218,8 +218,8 @@ class MongoDBUtilities {
     }
     public static void update_capital_flow(){
         Calendar cal=Calendar.getInstance();
-        cal.add(Calendar.DATE,-1);
-        long yeasterday=cal.getTime().getTime();
+        cal.add(Calendar.DATE,0);
+        long today=cal.getTime().getTime();
         
 
         String name="quant";
@@ -249,7 +249,7 @@ class MongoDBUtilities {
                     object.put("largeQuantSell",x.getValue().getLargeQuantSell());
                     object.put("largeQuantDealProp",x.getValue().getLargeQuantDealProp());
                     object.put("fiveDayInflow",x.getValue().getFiveDayInflow());
-                    object.put("time",timeToStamp(yeasterday));
+                    object.put("time",timeToStamp(today));
                     conn.insertOne( object);
                     object.clear();
                     System.out.println("insert "+x.getKey().getStockNo()+" capital done");
@@ -258,7 +258,7 @@ class MongoDBUtilities {
 
 
     public static void main(String args[]) {
-        update_day();
+//        update_day();
         update_capital_flow();
 //        update_week();
 //        update_month();
