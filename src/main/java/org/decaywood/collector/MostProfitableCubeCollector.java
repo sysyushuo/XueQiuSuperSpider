@@ -76,7 +76,7 @@ public class MostProfitableCubeCollector extends  AbstractCollector<List<Cube>> 
     }
 
     public MostProfitableCubeCollector(Market market, ORDER_BY order_by) {
-        this(null, market, order_by, 10);
+        this(null, market, order_by, 40);
     }
 
 
