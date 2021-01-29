@@ -1,5 +1,6 @@
 package org.decaywood.mapper.stockFirst;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.decaywood.entity.LongHuBangInfo;
 import org.decaywood.entity.Stock;
@@ -10,6 +11,7 @@ import org.decaywood.utils.EmptyObject;
 import org.decaywood.utils.RequestParaBuilder;
 import org.decaywood.utils.URLMapper;
 
+import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -35,6 +37,18 @@ public class StockToLongHuBangMapper extends AbstractMapper <Stock, LongHuBangIn
      */
     public StockToLongHuBangMapper(TimeWaitingStrategy strategy) {
         super(strategy);
+    }
+
+    public JsonNode get_list(Stock stock) throws IOException {
+
+        String target = URLMapper.LONGHUBANG_JSON.toString();
+        RequestParaBuilder builder = new RequestParaBuilder(target)
+                .addParameter("symbol", stock.getStockNo());
+        URL url = new URL(builder.build());
+
+        String json = request(url);
+        JsonNode node = mapper.readTree(json);
+        return node.get("list");
     }
 
     @Override
