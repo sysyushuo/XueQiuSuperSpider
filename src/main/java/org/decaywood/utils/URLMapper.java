@@ -29,7 +29,6 @@ public enum URLMapper {
     FOLLOWER_JSON("https://stock.xueqiu.com/v5/stock/portfolio/stock/follower_list.json"),
     FRIEND_FOLLOWER_JSON("https://xueqiu.com/friendships/followers.json"),
     /*--------------------------------  NetEase     --------------------------------------*/
-
     NETEASE_MAIN_PAGE("https://quotes.money.163.com/stock"),
     STOCK_CAPITAL_FLOW("https://quotes.money.163.com/service/zjlx_chart.html");
 

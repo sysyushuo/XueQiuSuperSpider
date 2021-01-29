@@ -39,7 +39,7 @@ public class stock_info {
     }
 
     public static void cube_stock_info(Date from,Date to) throws Exception {
-        MostProfitableCubeCollector mapper = new MostProfitableCubeCollector(MostProfitableCubeCollector.Market.CN, MostProfitableCubeCollector.ORDER_BY.DAILY);
+        MostProfitableCubeCollector mapper = new MostProfitableCubeCollector(MostProfitableCubeCollector.Market.CN, MostProfitableCubeCollector.ORDER_BY.MONTHLY);
         CubeToCubeWithTrendMapper mapper1 = new CubeToCubeWithTrendMapper(from,to);
         mapper.collectLogic().parallelStream().map(mapper1).collect(Collectors.toList())
                 .forEach(

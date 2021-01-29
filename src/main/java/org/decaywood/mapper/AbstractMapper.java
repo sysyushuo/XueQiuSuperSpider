@@ -35,8 +35,8 @@ public abstract class AbstractMapper <T, R> extends AbstractRequester implements
     @Override
     public R apply(T t) {
 
-//        if (t != null)
-//            System.out.println(getClass().getSimpleName() + " mapping -> " + t.getClass().getSimpleName());
+        if (t != null)
+            System.out.println(getClass().getSimpleName() + " mapping -> " + t.getClass().getSimpleName());
 
         R res = null;
         int retryTime = this.strategy.retryTimes();
@@ -56,7 +56,7 @@ public abstract class AbstractMapper <T, R> extends AbstractRequester implements
                     break;
                 } catch (Exception e) {
                     if (!(e instanceof IOException)) throw e;
-//                    System.out.println("Mapper: Network busy Retrying -> " + loopTime + " times" + "  " + this.getClass().getSimpleName());
+                    System.out.println("Mapper: Network busy Retrying -> " + loopTime + " times" + "  " + this.getClass().getSimpleName());
                     updateCookie(webSite);
                     this.strategy.waiting(loopTime++);
                     if(loopTime==retryTime-1){

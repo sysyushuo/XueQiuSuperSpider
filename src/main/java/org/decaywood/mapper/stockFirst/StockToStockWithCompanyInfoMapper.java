@@ -89,7 +89,7 @@ public class StockToStockWithCompanyInfoMapper extends AbstractMapper <Stock, St
 
     }
 
-    private void processStock(Stock stock, JsonNode node) {
+    private void processStock(Stock stock, JsonNode node) throws Exception {
         String compsname = node.get("compsname").asText();
         String orgtype = node.get("orgtype").asText();
         String founddate = node.get("founddate").asText();

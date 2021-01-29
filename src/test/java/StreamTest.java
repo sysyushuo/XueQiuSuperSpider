@@ -10,6 +10,7 @@ import org.decaywood.mapper.dateFirst.DateToLongHuBangStockMapper;
 import org.decaywood.mapper.industryFirst.IndustryToStocksMapper;
 import org.decaywood.mapper.stockFirst.StockToLongHuBangMapper;
 import org.decaywood.mapper.stockFirst.StockToStockWithAttributeMapper;
+import org.decaywood.mapper.stockFirst.StockToStockWithCompanyInfoMapper;
 import org.decaywood.mapper.stockFirst.StockToStockWithStockTrendMapper;
 import org.decaywood.utils.MathUtils;
 import org.junit.Test;
@@ -118,7 +119,7 @@ public class StreamTest {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2015, Calendar.OCTOBER, 20);
         Date from = calendar.getTime();
-        calendar.set(2015, Calendar.NOVEMBER, 25);
+        calendar.set(2021, Calendar.JANUARY, 25);
         Date to = calendar.getTime();
         MostProfitableCubeCollector cubeCollector = new MostProfitableCubeCollector( MostProfitableCubeCollector.Market.CN,
                 MostProfitableCubeCollector.ORDER_BY.DAILY);
@@ -135,14 +136,17 @@ public class StreamTest {
     //获取热股榜股票信息
     @Test
     public void HotRankStockDetail() {
-        StockScopeHotRankCollector collector = new StockScopeHotRankCollector(StockScopeHotRankCollector.Scope.US_WITHIN_24_HOUR);
+        StockScopeHotRankCollector collector = new StockScopeHotRankCollector(StockScopeHotRankCollector.Scope.SH_SZ_WITHIN_24_HOUR);
         StockToStockWithAttributeMapper mapper1 = new StockToStockWithAttributeMapper();
         StockToStockWithStockTrendMapper mapper2 = new StockToStockWithStockTrendMapper();
-        List<Stock> stocks = collector.get().parallelStream().map(mapper1.andThen(mapper2)).collect(Collectors.toList());
+        StockToStockWithCompanyInfoMapper mapper3 = new StockToStockWithCompanyInfoMapper();
+        List<Stock> stocks = collector.get().parallelStream().map(mapper1.andThen(mapper2)).collect(Collectors.toList())
+                .stream().map(mapper3).collect(Collectors.toList());;
         for (Stock stock : stocks) {
             System.out.print(stock.getStockName() + " -> ");
             System.out.print(stock.getAmplitude() + " " + stock.getOpen() + " " + stock.getHigh() + " and so on...");
             System.out.println(" trend size: " + stock.getStockTrend().getHistory().size());
+            System.out.println(" majorbiz: " + stock.getCompanyInfo().getMajorbiz());
         }
     }
 
@@ -269,4 +273,5 @@ public class StreamTest {
             }
         }
     }
+
 }
