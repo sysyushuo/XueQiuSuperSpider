@@ -1,5 +1,9 @@
 package kirk.quant;
-
+/**
+ * @author kirk
+ * @email sysmenghuan@163.com
+ * @date 2021/1/29 15:58
+ */
 import com.fasterxml.jackson.databind.JsonNode;
 import org.decaywood.entity.Cube;
 import org.decaywood.entity.LongHuBangInfo;
