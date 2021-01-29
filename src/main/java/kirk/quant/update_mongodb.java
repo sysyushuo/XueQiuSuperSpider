@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 
-class MongoDBUtilities {
+class update_mongodb {
     public static  MongoDatabase connect_to_mongodb(String name){
         MongoClient mongoClient = new MongoClient();
         MongoDatabase mongoDatabase = mongoClient.getDatabase(name);

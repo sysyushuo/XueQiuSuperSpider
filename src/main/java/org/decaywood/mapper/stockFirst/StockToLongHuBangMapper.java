@@ -53,6 +53,8 @@ public class StockToLongHuBangMapper extends AbstractMapper <Stock, LongHuBangIn
         RequestParaBuilder builder = new RequestParaBuilder(target)
                 .addParameter("date", dateParam)
                 .addParameter("symbol", stock.getStockNo());
+
+
         URL url = new URL(builder.build());
 
         String json = request(url);
@@ -66,6 +68,7 @@ public class StockToLongHuBangMapper extends AbstractMapper <Stock, LongHuBangIn
         JsonNode detail = node.get("detail");
         JsonNode buyListNode = detail.get("tqQtBizunittrdinfoBuyList");
         JsonNode saleListNode = detail.get("tqQtBizunittrdinfoSaleList");
+
 
         Set<LongHuBangInfo.BizsunitInfo> buyList = new HashSet<>();
         Set<LongHuBangInfo.BizsunitInfo> saleList = new HashSet<>();
