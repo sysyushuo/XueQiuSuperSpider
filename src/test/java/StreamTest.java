@@ -141,7 +141,7 @@ public class StreamTest {
         StockToStockWithStockTrendMapper mapper2 = new StockToStockWithStockTrendMapper();
         StockToStockWithCompanyInfoMapper mapper3 = new StockToStockWithCompanyInfoMapper();
         List<Stock> stocks = collector.get().parallelStream().map(mapper1.andThen(mapper2)).collect(Collectors.toList())
-                .stream().map(mapper3).collect(Collectors.toList());;
+                .stream().map(mapper3).collect(Collectors.toList());
         for (Stock stock : stocks) {
             System.out.print(stock.getStockName() + " -> ");
             System.out.print(stock.getAmplitude() + " " + stock.getOpen() + " " + stock.getHigh() + " and so on...");

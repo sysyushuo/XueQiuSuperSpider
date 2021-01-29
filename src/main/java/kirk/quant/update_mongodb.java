@@ -5,12 +5,14 @@ package kirk.quant;
  * @date 2021/1/27 15:58
  */
 
+import com.mongodb.Block;
 import com.mongodb.client.model.Filters;
 import org.bson.conversions.Bson;
 import org.decaywood.collector.CommissionIndustryCollector;
 import org.decaywood.entity.trend.StockTrend;
 import org.decaywood.mapper.industryFirst.IndustryToStocksMapper;
 import org.decaywood.mapper.stockFirst.StockToCapitalFlowEntryMapper;
+import org.decaywood.mapper.stockFirst.StockToStockWithCompanyInfoMapper;
 import org.decaywood.mapper.stockFirst.StockToStockWithStockTrendMapper;
 import org.bson.Document;
 import com.mongodb.MongoClient;
@@ -21,6 +23,7 @@ import com.mongodb.client.MongoDatabase;
 import org.decaywood.entity.Stock;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -259,14 +262,49 @@ class update_mongodb {
                     System.out.println("insert "+x.getKey().getStockNo()+" capital done");
                 });
     }
+    public static List<Stock> get_stock_list(){
+        List<Stock> stocks = new ArrayList<>();
+        MongoDatabase mongoDatabase = connect_to_mongodb("quant");
+        MongoCollection<Document> collection = connect_to_collection("ts-stock_basic",mongoDatabase);
+        FindIterable<Document> res = collection.find();
+        for(Document x:res){
+            String[] tmp = x.getString("ts_code").split("\\.");
+            stocks.add(new Stock(x.getString("name"),tmp[1]+tmp[0]));
 
+        }
+        return stocks;
+    }
+
+    public static void get_stock_majorbiz(){
+        List<Stock> stocks = get_stock_list();
+        Document object=new Document();
+        StockToStockWithCompanyInfoMapper mapper = new StockToStockWithCompanyInfoMapper();
+        String name="quant";
+        MongoDatabase mongoDatabase = connect_to_mongodb(name);
+        String collection_name="snowball_stock_majorbiz";
+        MongoCollection<Document> conn = connect_to_collection(collection_name,mongoDatabase);
+        stocks.stream().map(mapper).filter(Objects::nonNull).forEach(
+            x->{
+                object.put("code", x.getStockNo());
+                object.put("name", x.getStockName());
+                object.put("orgtype", x.getCompanyInfo().getOrgtype());
+                object.put("founddate", x.getCompanyInfo().getFounddate());
+                object.put("bizscope", x.getCompanyInfo().getBizscope());
+                object.put("majorbiz", x.getCompanyInfo().getMajorbiz());
+                conn.insertOne(object);
+                object.clear();
+                System.out.println("insert " + x.getStockNo() + " majorbiz done");
+            }
+        );
+    }
 
     public static void main(String args[]) {
-        update_day();
-        update_capital_flow();
+//        update_day();
+//        update_capital_flow();
 //        update_week();
 //        update_month();
 //        String collection_name="snowball_stock_capital_daily";
 //        delet_day(collection_name,timeToStamp());
+        get_stock_majorbiz();
     }
 }
