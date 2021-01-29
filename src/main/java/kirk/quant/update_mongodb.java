@@ -231,14 +231,13 @@ class update_mongodb {
         CommissionIndustryCollector collector = new CommissionIndustryCollector();
         IndustryToStocksMapper mapper = new IndustryToStocksMapper();
         StockToCapitalFlowEntryMapper mapper1 = new StockToCapitalFlowEntryMapper();
-
+        Document object=new Document();
         collector.get()
                 .parallelStream()
                 .map(mapper)
                 .flatMap(Collection::stream)
                 .map(mapper1)
                 .forEach(x-> {
-                    Document object=new Document();
                     object.put("industry",x.getKey().getIndustry().getIndustryName());
                     object.put("code",x.getKey().getStockNo());
                     object.put("capitalInflow",x.getValue().getCapitalInflow());
