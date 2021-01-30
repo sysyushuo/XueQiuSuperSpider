@@ -88,7 +88,7 @@ class update_mongodb {
             Stream<StockTrend> res = stocks.stream()
                     .map(mapper.andThen(Stock::getStockTrend));
 
-            res.forEach(x->{
+            res.filter(Objects::nonNull).forEach(x->{
                 Document object=new Document();
                 x.getHistory().forEach(trend->{
                     object.put("code", x.getStockNo());
@@ -244,6 +244,7 @@ class update_mongodb {
                 .map(mapper)
                 .flatMap(Collection::stream)
                 .map(mapper1)
+                .filter(Objects::nonNull)
                 .forEach(x-> {
                     object.put("industry",x.getKey().getIndustry().getIndustryName());
                     object.put("code",x.getKey().getStockNo());
