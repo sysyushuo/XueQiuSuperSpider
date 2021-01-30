@@ -69,7 +69,6 @@ class update_mongodb {
 
 
     public static void update_day(){
-        MongoClient mongoClient=null;
         List<Stock> stocks=generate_stock_list();
 
         Calendar calendar = Calendar.getInstance();
@@ -299,12 +298,12 @@ class update_mongodb {
     }
 
     public static void main(String args[]) {
-//        update_day();
-//        update_capital_flow();
+        update_day();
+        update_capital_flow();
 //        update_week();
 //        update_month();
 //        String collection_name="snowball_stock_capital_daily";
 //        delet_day(collection_name,timeToStamp());
-        get_stock_majorbiz();
+//        get_stock_majorbiz();
     }
 }
