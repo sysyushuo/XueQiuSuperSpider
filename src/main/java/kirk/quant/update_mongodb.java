@@ -304,7 +304,7 @@ public class update_mongodb {
 //        update_week();
 //        update_month();
 //        String collection_name="snowball_stock_capital_daily";
-//        delet_day(collection_name,timeToStamp());
+//        delet_day(collection_name,"1612108800000");
 //        get_stock_majorbiz();
     }
 }
