@@ -5,7 +5,6 @@ package kirk.quant;
  * @date 2021/1/27 15:58
  */
 
-import com.mongodb.Block;
 import com.mongodb.client.model.Filters;
 import org.bson.conversions.Bson;
 import org.decaywood.collector.CommissionIndustryCollector;
@@ -23,11 +22,10 @@ import com.mongodb.client.MongoDatabase;
 import org.decaywood.entity.Stock;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
-class update_mongodb {
+public class update_mongodb {
     public static  MongoDatabase connect_to_mongodb(String name){
         MongoClient mongoClient = new MongoClient();
         MongoDatabase mongoDatabase = mongoClient.getDatabase(name);
@@ -37,7 +35,7 @@ class update_mongodb {
     public static MongoCollection<Document> connect_to_collection(String collection_name,MongoDatabase mongoDatabase){
         return mongoDatabase.getCollection(collection_name);
     }
-    public static void delet_day(String collection_name,String time){
+    protected static void delet_day(String collection_name,String time){
         String name="quant";
         MongoDatabase mongoDatabase = connect_to_mongodb(name);
         MongoCollection<Document> conn = connect_to_collection(collection_name,mongoDatabase);
@@ -68,7 +66,7 @@ class update_mongodb {
     }
 
 
-    public static void update_day(){
+    protected static void update_day(){
         List<Stock> stocks=generate_stock_list();
 
         Calendar calendar = Calendar.getInstance();
@@ -120,8 +118,8 @@ class update_mongodb {
         }
     }
 
-    public static void update_week(){
-        //上次更新时间为20210122
+    protected static void update_week(){
+        //last update 20210122
         List<Stock> stocks=generate_stock_list();
         Calendar calendar = Calendar.getInstance();
         calendar.set(2000,1,1);
@@ -172,8 +170,8 @@ class update_mongodb {
         }
     }
 
-    public static void update_month(){
-        //上次更新时间为20210122
+    protected static void update_month(){
+        //last update 20210122
         MongoClient mongoClient=null;
         List<Stock> stocks=generate_stock_list();
         Calendar calendar = Calendar.getInstance();
@@ -223,7 +221,7 @@ class update_mongodb {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
     }
-    public static void update_capital_flow(){
+    protected static void update_capital_flow(){
         Calendar cal=Calendar.getInstance();
         cal.add(Calendar.DATE,0);
         long today=cal.getTime().getTime();
@@ -262,7 +260,7 @@ class update_mongodb {
                     System.out.println("insert "+x.getKey().getStockNo()+" capital done");
                 });
     }
-    public static List<Stock> get_stock_list(){
+    protected static List<Stock> get_stock_list(){
         List<Stock> stocks = new ArrayList<>();
         MongoDatabase mongoDatabase = connect_to_mongodb("quant");
         MongoCollection<Document> collection = connect_to_collection("ts-stock_basic",mongoDatabase);
@@ -275,7 +273,7 @@ class update_mongodb {
         return stocks;
     }
 
-    public static void get_stock_majorbiz(){
+    protected static void get_stock_majorbiz(){
         List<Stock> stocks = get_stock_list();
         Document object=new Document();
         StockToStockWithCompanyInfoMapper mapper = new StockToStockWithCompanyInfoMapper();
@@ -298,8 +296,10 @@ class update_mongodb {
         );
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
+        System.out.println("start to update day ");
         update_day();
+        System.out.println("start ot update capital flow");
         update_capital_flow();
 //        update_week();
 //        update_month();

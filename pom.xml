@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>decaywood</groupId>
-    <artifactId>XueQiuSpider</artifactId>
+    <groupId>quant</groupId>
+    <artifactId>update_mongodb</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -13,7 +13,6 @@
         <jsoup-version>1.8.3</jsoup-version>
         <jackson-version>2.11.3</jackson-version>
         <junit-version>4.12</junit-version>
-        <jdbc-driver-version>8.0.21</jdbc-driver-version>
         <jvppeteer-version>1.1.0</jvppeteer-version>
         <spring-version>5.2.9.RELEASE</spring-version>
     </properties>
@@ -41,12 +40,13 @@
             <version>${spring-version}</version>
         </dependency>
 
-
+        <!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${jdbc-driver-version}</version>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>3.12.0</version>
         </dependency>
+
 
         <dependency>
             <groupId>org.jsoup</groupId>
@@ -79,10 +79,23 @@
             <version>3.12.0</version>
         </dependency>
 
+
         <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>Mongodb-driver-core</artifactId>
-            <version>3.12.0</version>
+            <groupId>com.tictactec</groupId>
+            <artifactId>ta-lib</artifactId>
+            <version>0.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tictactec</groupId>
+            <artifactId>ta-lib</artifactId>
+            <version>0.4.0</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.tictactec</groupId>
+            <artifactId>ta-lib</artifactId>
+            <version>0.4.0</version>
+            <classifier>sources</classifier>
         </dependency>
 
     </dependencies>
