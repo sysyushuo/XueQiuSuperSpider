@@ -13,7 +13,7 @@ import java.util.List;
  * 资金流向
  */
 public class CapitalFlow implements DeepCopy<CapitalFlow> {
-
+    private final String industry;//行业
     private final String capitalInflow;//资金流向（万）
     private final String largeQuantity;//大单（万）
     private final String midQuantity;//中单（万）
@@ -30,6 +30,7 @@ public class CapitalFlow implements DeepCopy<CapitalFlow> {
 
     /**
      *
+     * @param industry
      * @param capitalInflow 资金流向
      * @param largeQuantity 大单
      * @param midQuantity 中单
@@ -40,7 +41,7 @@ public class CapitalFlow implements DeepCopy<CapitalFlow> {
      * @param fiveDayInflow 五天净流入总量
      * @param fiveDayInflows 五天净流入详情
      */
-    public CapitalFlow(String capitalInflow,
+    public CapitalFlow(String industry, String capitalInflow,
                        String largeQuantity,
                        String midQuantity,
                        String smallQuantity,
@@ -50,6 +51,7 @@ public class CapitalFlow implements DeepCopy<CapitalFlow> {
                        String fiveDayInflow,
                        List<Double> fiveDayInflows) {
 
+        this.industry = industry;
         this.capitalInflow = capitalInflow;
         this.largeQuantity = largeQuantity;
         this.midQuantity = midQuantity;
@@ -61,7 +63,7 @@ public class CapitalFlow implements DeepCopy<CapitalFlow> {
         this.fiveDayInflows = fiveDayInflows;
     }
 
-
+    public String getIndustry(){return  industry;}
 
     public String getCapitalInflow() {
         return capitalInflow;
@@ -102,7 +104,7 @@ public class CapitalFlow implements DeepCopy<CapitalFlow> {
     @Override
     public CapitalFlow copy() {
         return new CapitalFlow(
-                capitalInflow,
+                industry, capitalInflow,
                 largeQuantity,
                 midQuantity,
                 smallQuantity,

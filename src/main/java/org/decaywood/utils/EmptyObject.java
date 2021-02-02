@@ -35,7 +35,7 @@ public abstract class EmptyObject {
     private static class EmptyCapitalFlow extends CapitalFlow {
 
         public EmptyCapitalFlow() {
-            super(  emptyString,
+            super(emptyString, emptyString,
                     emptyString,
                     emptyString,
                     emptyString,

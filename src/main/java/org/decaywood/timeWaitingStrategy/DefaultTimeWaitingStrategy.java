@@ -16,7 +16,7 @@ public class DefaultTimeWaitingStrategy implements TimeWaitingStrategy {
     private final int retryTime;
 
     public DefaultTimeWaitingStrategy() {
-        this(10000, 500, 10);
+        this(100, 10, 10);
     }
 
 

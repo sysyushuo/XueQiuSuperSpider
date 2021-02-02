@@ -21,6 +21,8 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import kirk.quant.update_mongodb;
+
 /**
  * @author: decaywood
  * @date: 2015/11/24 14:06
@@ -31,8 +33,8 @@ public class StreamTest {
     //一阳穿三线个股
     @Test
     public void yiyinsanyang() {
-        List<Stock> stocks = TestCaseGenerator.generateStocks();
-
+//        List<Stock> stocks = TestCaseGenerator.generateStocks();
+        List<Stock> stocks = update_mongodb.get_stock_between_list(20.0,10.0);
         StockToStockWithAttributeMapper attributeMapper = new StockToStockWithAttributeMapper();
         StockToStockWithStockTrendMapper trendMapper = new StockToStockWithStockTrendMapper();
 
@@ -55,7 +57,7 @@ public class StreamTest {
         };
 
         stocks.parallelStream()
-                .map(x -> new Entry<>(x.getStockName(), attributeMapper.andThen(trendMapper).apply(x)))
+                .map(x -> new Entry<>(x.getStockName(), trendMapper.apply(x)))
                 .filter(predicate)
                 .map(Entry::getKey)
                 .forEach(System.out::println);

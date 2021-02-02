@@ -5,6 +5,8 @@ package kirk.quant;
  * @date 2021/1/27 15:58
  */
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.Cursor;
 import com.mongodb.client.model.Filters;
 import org.bson.conversions.Bson;
 import org.decaywood.collector.CommissionIndustryCollector;
@@ -22,6 +24,7 @@ import com.mongodb.client.MongoDatabase;
 import org.decaywood.entity.Stock;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -221,7 +224,8 @@ public class update_mongodb {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
     }
-    protected static void update_capital_flow(){
+    protected static void
+    update_capital_flow(){
         Calendar cal=Calendar.getInstance();
         cal.add(Calendar.DATE,0);
         long today=cal.getTime().getTime();
@@ -242,7 +246,7 @@ public class update_mongodb {
                 .map(mapper)
                 .flatMap(Collection::stream)
                 .map(mapper1)
-                .filter(Objects::nonNull)
+                .collect(Collectors.toSet())
                 .forEach(x-> {
                     object.put("industry",x.getKey().getIndustry().getIndustryName());
                     object.put("code",x.getKey().getStockNo());
@@ -255,6 +259,7 @@ public class update_mongodb {
                     object.put("largeQuantDealProp",x.getValue().getLargeQuantDealProp());
                     object.put("fiveDayInflow",x.getValue().getFiveDayInflow());
                     object.put("time",timeToStamp(today));
+
                     conn.insertOne( object);
                     object.clear();
                     System.out.println("insert "+x.getKey().getStockNo()+" capital done");
@@ -273,9 +278,30 @@ public class update_mongodb {
         return stocks;
     }
 
+    public static List<Stock> get_stock_between_list(double price_upper,double price_lower){
+        Calendar cal=Calendar.getInstance();
+        cal.add(Calendar.DATE,0);
+        long today=cal.getTime().getTime();
+        HashMap stock_name_code=new HashMap();
+        get_stock_list().forEach(x->{stock_name_code.put(x.getStockNo(),x.getStockName());});
+        List<Stock> stocks = new ArrayList<>();
+        MongoDatabase mongoDatabase = connect_to_mongodb("quant");
+        MongoCollection<Document> collection = connect_to_collection("snowball_stock_daily",mongoDatabase);
+        Bson bsonFilter = Filters.eq("time", String.valueOf(timeToStamp(today)));
+        FindIterable<Document> res = collection.find(bsonFilter);
+        for(Document x:res){
+            if((Double.parseDouble(x.get("close").toString())<=price_upper) && (Double.parseDouble(x.get("close").toString())>=price_lower)){
+                stocks.add(new Stock((String) stock_name_code.get(x.getString("code")),x.getString("code")));
+            }
+
+
+        }
+        return stocks;
+    }
+
     protected static void get_stock_majorbiz(){
         List<Stock> stocks = get_stock_list();
-        Document object=new Document();
+
         StockToStockWithCompanyInfoMapper mapper = new StockToStockWithCompanyInfoMapper();
         String name="quant";
         MongoDatabase mongoDatabase = connect_to_mongodb(name);
@@ -283,6 +309,7 @@ public class update_mongodb {
         MongoCollection<Document> conn = connect_to_collection(collection_name,mongoDatabase);
         stocks.stream().map(mapper).filter(Objects::nonNull).forEach(
             x->{
+                Document object=new Document();
                 object.put("code", x.getStockNo());
                 object.put("name", x.getStockName());
                 object.put("orgtype", x.getCompanyInfo().getOrgtype());
@@ -297,14 +324,15 @@ public class update_mongodb {
     }
 
     public static void main(String[] args) {
-        System.out.println("start to update day ");
-        update_day();
-        System.out.println("start ot update capital flow");
-        update_capital_flow();
+//        System.out.println("start to update day ");
+//        update_day();
+//        System.out.println("start ot update capital flow");
+//        update_capital_flow();
 //        update_week();
 //        update_month();
 //        String collection_name="snowball_stock_capital_daily";
-//        delet_day(collection_name,"1612108800000");
+//        delet_day(collection_name,"1612195200000");
 //        get_stock_majorbiz();
+        get_stock_between_list(20.0,10.0).forEach(x->{System.out.println(x.getStockName());});
     }
 }

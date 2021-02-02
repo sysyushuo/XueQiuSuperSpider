@@ -11,7 +11,6 @@ import org.decaywood.utils.RequestParaBuilder;
 import org.decaywood.utils.URLMapper;
 
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +74,7 @@ public class StockToCapitalFlowEntryMapper extends AbstractMapper<Stock, Entry<S
             fiveDayInflows.add(val);
         }
         CapitalFlow capitalFlow = new CapitalFlow(
-                capitalInflow, largeQuantity, midQuantity, smallQuantity, largeQuantBuy,
+                stock.getIndustry().getIndustryName(), capitalInflow, largeQuantity, midQuantity, smallQuantity, largeQuantBuy,
                 largeQuantSell, largeQuantDealProp, fiveDayInflow, fiveDayInflows
         );
         return new Entry<>(stock, capitalFlow);
