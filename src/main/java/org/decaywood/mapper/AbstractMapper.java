@@ -59,9 +59,7 @@ public abstract class AbstractMapper <T, R> extends AbstractRequester implements
                     System.out.println("Mapper: Network busy Retrying -> " + loopTime + " times" + "  " + this.getClass().getSimpleName());
                     updateCookie(webSite);
                     this.strategy.waiting(loopTime++);
-                    if(loopTime==retryTime-1){
-                        System.out.println("Industry "+t.toString().split(" ")[2]+" retry times reach max break");
-                    }
+
                 }
             }
 

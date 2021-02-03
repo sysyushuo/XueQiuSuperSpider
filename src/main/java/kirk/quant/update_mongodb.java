@@ -5,14 +5,16 @@ package kirk.quant;
  * @date 2021/1/27 15:58
  */
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.Cursor;
+
+import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.mongodb.client.model.Filters;
 import org.bson.conversions.Bson;
 import org.decaywood.collector.CommissionIndustryCollector;
 import org.decaywood.entity.trend.StockTrend;
 import org.decaywood.mapper.industryFirst.IndustryToStocksMapper;
 import org.decaywood.mapper.stockFirst.StockToCapitalFlowEntryMapper;
+import org.decaywood.mapper.stockFirst.StockToStockWithAttributeMapper;
 import org.decaywood.mapper.stockFirst.StockToStockWithCompanyInfoMapper;
 import org.decaywood.mapper.stockFirst.StockToStockWithStockTrendMapper;
 import org.bson.Document;
@@ -23,6 +25,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.decaywood.entity.Stock;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -321,12 +324,62 @@ public class update_mongodb {
             }
         );
     }
+    public static void update_stock_attribute()  {
 
+        String name="quant";
+        MongoDatabase mongoDatabase = connect_to_mongodb(name);
+        String collection_name="snowball_stock_attribute";
+        MongoCollection<Document> conn = connect_to_collection(collection_name,mongoDatabase);
+        StockToStockWithStockTrendMapper stockmapper = new StockToStockWithStockTrendMapper();
+        StockToStockWithAttributeMapper attributeMapper = new StockToStockWithAttributeMapper();
+        List<Stock> stocks=generate_stock_list();
+//        List<Stock> stocks=stockmapper.get_stock_list();
+        Document object=new Document();
+
+        stocks.stream().map(attributeMapper).filter(Objects::nonNull).forEach(
+                x->{
+                    object.put("stockName",x.getStockName());
+                    object.put("stockNo",x.getStockNo());
+                    object.put("currency_unit",x.getCurrency_unit());
+                    object.put("current",x.getCurrent());
+                    object.put("volume",x.getVolume());
+                    object.put("percentage",x.getPercentage());
+                    object.put("change",x.getChange());
+                    object.put("open",x.getOpen());
+                    object.put("high",x.getHigh());
+                    object.put("low",x.getLow());
+                    object.put("amplitude",x.getAmplitude());
+                    object.put("fall_stop",x.getFall_stop());
+                    object.put("rise_stop",x.getRise_stop());
+                    object.put("close",x.getClose());
+                    object.put("last_close",x.getLast_close());
+                    object.put("high52Week",x.getHigh52Week());
+                    object.put("low52Week",x.getLow52week());
+                    object.put("marketCapital",x.getMarketCapital());
+                    object.put("float_market_capital",x.getFloat_market_capital());
+                    object.put("float_shares",x.getFloat_shares());
+                    object.put("totalShares",x.getTotalShares());
+                    object.put("eps",x.getEps());
+                    object.put("net_assets",x.getNet_assets());
+                    object.put("pe_ttm",x.getPe_ttm());
+                    object.put("pe_lyr",x.getPe_lyr());
+                    object.put("dividend",x.getDividend());
+                    object.put("psr",x.getPsr());
+                    object.put("turnover_rate",x.getTurnover_rate());
+                    object.put("amount",x.getAmount());
+                    object.put("time",timeToStamp(x.getTime().getTime()));
+                    conn.insertOne(object);
+                    object.clear();
+                    System.out.println("insert " + x.getStockNo() + " attribute done");                }
+        );
+    }
     public static void main(String[] args) {
-        System.out.println("start to update day ");
-        update_day();
-        System.out.println("start ot update capital flow");
-        update_capital_flow();
+//        System.out.println("start to update day ");
+//        update_day();
+//        System.out.println("start ot update capital flow");
+//        update_capital_flow();
+        update_stock_attribute();
+
 //        update_week();
 //        update_month();
 //        String collection_name="snowball_stock_capital_daily";
