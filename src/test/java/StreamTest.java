@@ -34,7 +34,7 @@ public class StreamTest {
     @Test
     public void yiyinsanyang() {
 //        List<Stock> stocks = TestCaseGenerator.generateStocks();
-        List<Stock> stocks = update_mongodb.get_stock_between_list(20.0,10.0);
+        List<Stock> stocks = update_mongodb.get_stock_between_list(25,20);
         StockToStockWithAttributeMapper attributeMapper = new StockToStockWithAttributeMapper();
         StockToStockWithStockTrendMapper trendMapper = new StockToStockWithStockTrendMapper();
 
@@ -57,7 +57,7 @@ public class StreamTest {
         };
 
         stocks.parallelStream()
-                .map(x -> new Entry<>(x.getStockName(), trendMapper.apply(x)))
+                .map(x -> new Entry<>(x.getStockName(), attributeMapper.andThen(trendMapper).apply(x)))
                 .filter(predicate)
                 .map(Entry::getKey)
                 .forEach(System.out::println);
@@ -68,9 +68,9 @@ public class StreamTest {
     @Test
     public void findNewsUcareAbout() {
         List<URL> news = new HuShenNewsRefCollector(HuShenNewsRefCollector.Topic.TOTAL, 2).get();
-        List<URL> res = news.parallelStream().filter(new PageKeyFilter("万孚生物", false)).collect(Collectors.toList());
+        List<URL> res = news.parallelStream().filter(new PageKeyFilter("吉翔股份", false)).collect(Collectors.toList());
 
-        List<URL> regexRes = news.parallelStream().filter(new PageKeyFilter("万孚生物", true)).collect(Collectors.toList());
+        List<URL> regexRes = news.parallelStream().filter(new PageKeyFilter("吉翔股份", true)).collect(Collectors.toList());
         for (URL re : regexRes) {
             System.out.println("Regex : " + re);
         }
@@ -121,7 +121,7 @@ public class StreamTest {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2015, Calendar.OCTOBER, 20);
         Date from = calendar.getTime();
-        calendar.set(2021, Calendar.JANUARY, 25);
+        calendar.set(2021, Calendar.FEBRUARY, 3);
         Date to = calendar.getTime();
         MostProfitableCubeCollector cubeCollector = new MostProfitableCubeCollector( MostProfitableCubeCollector.Market.CN,
                 MostProfitableCubeCollector.ORDER_BY.DAILY);
@@ -129,8 +129,8 @@ public class StreamTest {
         CubeToCubeWithTrendMapper mapper1 = new CubeToCubeWithTrendMapper(from, to);
         List<Cube> cubes = cubeCollector.get().parallelStream().map(mapper.andThen(mapper1)).collect(Collectors.toList());
         for (Cube cube : cubes) {
-            System.out.print(cube.getName() + " 总收益: " + cube.getTotal_gain());
-            System.out.println(" 最新持仓 " + cube.getRebalancing().getHistory().get(1).toString());
+            System.out.print(cube.getSymbol()+":"+cube.getName() + " 日收益: " + cube.getDaily_gain()+"\n");
+//            System.out.println(" 最新持仓 " + cube.getRebalancing().getHistory().get(1).toString());
         }
     }
 
@@ -142,8 +142,8 @@ public class StreamTest {
         StockToStockWithAttributeMapper mapper1 = new StockToStockWithAttributeMapper();
         StockToStockWithStockTrendMapper mapper2 = new StockToStockWithStockTrendMapper();
         StockToStockWithCompanyInfoMapper mapper3 = new StockToStockWithCompanyInfoMapper();
-        List<Stock> stocks = collector.get().parallelStream().map(mapper1.andThen(mapper2)).collect(Collectors.toList())
-                .stream().map(mapper3).collect(Collectors.toList());
+        List<Stock> stocks = collector.get().parallelStream().map(mapper1.andThen(mapper2)).filter(Objects::nonNull).collect(Collectors.toList())
+                .stream().map(mapper3).filter(Objects::nonNull).collect(Collectors.toList());
         for (Stock stock : stocks) {
             System.out.print(stock.getStockName() + " -> ");
             System.out.print(stock.getAmplitude() + " " + stock.getOpen() + " " + stock.getHigh() + " and so on...");
@@ -163,7 +163,7 @@ public class StreamTest {
         StockToStockWithStockTrendMapper mapper2 = new StockToStockWithStockTrendMapper();
         Map<Industry, List<Stock>> res = collector.get()
                 .parallelStream()
-                .filter(x -> x.getIndustryName().equals("半导体"))
+                .filter(x -> x.getIndustryName().equals("稀有金属"))
                 .map(mapper)
                 .flatMap(Collection::stream)
                 .map(mapper1.andThen(mapper2))
@@ -206,9 +206,9 @@ public class StreamTest {
     @Test
     public void LongHuBangTracking() {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(2020, Calendar.DECEMBER, 1);
+        calendar.set(2020, Calendar.JANUARY, 1);
         Date from = calendar.getTime();
-        calendar.set(2021, Calendar.JANUARY, 20);
+        calendar.set(2021, Calendar.FEBRUARY, 20);
         Date to = calendar.getTime();
         DateRangeCollector collector = new DateRangeCollector(from, to);
         DateToLongHuBangStockMapper mapper = new DateToLongHuBangStockMapper();

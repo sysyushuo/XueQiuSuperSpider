@@ -122,10 +122,10 @@ public class update_mongodb {
     }
 
     protected static void update_week(){
-        //last update 20210122
+        //last update 20210125
         List<Stock> stocks=generate_stock_list();
         Calendar calendar = Calendar.getInstance();
-        calendar.set(2000,1,1);
+        calendar.set(2021,Calendar.JANUARY,25);
         Date from = calendar.getTime();
         Date to = new Date();
 
@@ -174,7 +174,7 @@ public class update_mongodb {
     }
 
     protected static void update_month(){
-        //last update 20210122
+        //last update 20210203
         MongoClient mongoClient=null;
         List<Stock> stocks=generate_stock_list();
         Calendar calendar = Calendar.getInstance();
@@ -224,10 +224,9 @@ public class update_mongodb {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
     }
-    protected static void
-    update_capital_flow(){
+    protected static void update_capital_flow(){
         Calendar cal=Calendar.getInstance();
-        cal.add(Calendar.DATE,0);
+        cal.add(Calendar.DATE,-5);
         long today=cal.getTime().getTime();
         
 
@@ -280,7 +279,7 @@ public class update_mongodb {
 
     public static List<Stock> get_stock_between_list(double price_upper,double price_lower){
         Calendar cal=Calendar.getInstance();
-        cal.add(Calendar.DATE,0);
+        cal.add(Calendar.DATE,-1);
         long today=cal.getTime().getTime();
         HashMap stock_name_code=new HashMap();
         get_stock_list().forEach(x->{stock_name_code.put(x.getStockNo(),x.getStockName());});
@@ -324,15 +323,15 @@ public class update_mongodb {
     }
 
     public static void main(String[] args) {
-//        System.out.println("start to update day ");
-//        update_day();
-//        System.out.println("start ot update capital flow");
-//        update_capital_flow();
+        System.out.println("start to update day ");
+        update_day();
+        System.out.println("start ot update capital flow");
+        update_capital_flow();
 //        update_week();
 //        update_month();
 //        String collection_name="snowball_stock_capital_daily";
 //        delet_day(collection_name,"1612195200000");
 //        get_stock_majorbiz();
-        get_stock_between_list(20.0,10.0).forEach(x->{System.out.println(x.getStockName());});
+//        get_stock_between_list(20.0,10.0).forEach(x->{System.out.println(x.getStockName());});
     }
 }
