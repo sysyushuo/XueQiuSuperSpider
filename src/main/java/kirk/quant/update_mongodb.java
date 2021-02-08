@@ -330,10 +330,8 @@ public class update_mongodb {
         MongoDatabase mongoDatabase = connect_to_mongodb(name);
         String collection_name="snowball_stock_attribute";
         MongoCollection<Document> conn = connect_to_collection(collection_name,mongoDatabase);
-        StockToStockWithStockTrendMapper stockmapper = new StockToStockWithStockTrendMapper();
         StockToStockWithAttributeMapper attributeMapper = new StockToStockWithAttributeMapper();
         List<Stock> stocks=generate_stock_list();
-//        List<Stock> stocks=stockmapper.get_stock_list();
         Document object=new Document();
 
         stocks.stream().map(attributeMapper).filter(Objects::nonNull).forEach(
@@ -374,8 +372,10 @@ public class update_mongodb {
         );
     }
     public static void main(String[] args) {
+//        long current=System.currentTimeMillis();//当前时间毫秒数
+//        long zero=current/(1000*3600*24)*(1000*3600*24)-TimeZone.getDefault().getRawOffset();
 //        String collection_name="snowball_stock_daily";
-//        delet_day(collection_name,"1612713600000");
+//        delet_day(collection_name,String.valueOf(zero));
         System.out.println("start to update day ");
         update_day();
         System.out.println("start ot update capital flow");
