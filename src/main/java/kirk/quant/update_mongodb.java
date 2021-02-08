@@ -229,7 +229,7 @@ public class update_mongodb {
     }
     protected static void update_capital_flow(){
         Calendar cal=Calendar.getInstance();
-        cal.add(Calendar.DATE,-5);
+        cal.add(Calendar.DATE,0);
         long today=cal.getTime().getTime();
         
 
@@ -374,10 +374,12 @@ public class update_mongodb {
         );
     }
     public static void main(String[] args) {
-//        System.out.println("start to update day ");
-//        update_day();
-//        System.out.println("start ot update capital flow");
-//        update_capital_flow();
+//        String collection_name="snowball_stock_daily";
+//        delet_day(collection_name,"1612713600000");
+        System.out.println("start to update day ");
+        update_day();
+        System.out.println("start ot update capital flow");
+        update_capital_flow();
         update_stock_attribute();
 
 //        update_week();
