@@ -125,10 +125,10 @@ public class update_mongodb {
     }
 
     protected static void update_week(){
-        //last update 20210125
+        //last update 20210218
         List<Stock> stocks=generate_stock_list();
         Calendar calendar = Calendar.getInstance();
-        calendar.set(2021,Calendar.JANUARY,25);
+        calendar.set(2021,Calendar.FEBRUARY,1);
         Date from = calendar.getTime();
         Date to = new Date();
 
@@ -372,10 +372,10 @@ public class update_mongodb {
         );
     }
     public static void main(String[] args) {
-//        long current=System.currentTimeMillis();//当前时间毫秒数
-//        long zero=current/(1000*3600*24)*(1000*3600*24)-TimeZone.getDefault().getRawOffset();
-//        String collection_name="snowball_stock_daily";
-//        delet_day(collection_name,String.valueOf(zero));
+        long current=System.currentTimeMillis();//当前时间毫秒数
+        long zero=current/(1000*3600*24)*(1000*3600*24)-TimeZone.getDefault().getRawOffset();
+        String collection_name="snowball_stock_daily";
+        delet_day(collection_name,String.valueOf(zero));
         System.out.println("start to update day ");
         update_day();
         System.out.println("start ot update capital flow");
