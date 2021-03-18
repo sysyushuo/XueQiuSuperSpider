@@ -128,7 +128,7 @@ public class update_mongodb {
         //last update 20210218
         List<Stock> stocks=generate_stock_list();
         Calendar calendar = Calendar.getInstance();
-        calendar.set(2021,Calendar.FEBRUARY,1);
+        calendar.set(2021,Calendar.FEBRUARY,18);
         Date from = calendar.getTime();
         Date to = new Date();
 
@@ -181,7 +181,7 @@ public class update_mongodb {
         MongoClient mongoClient=null;
         List<Stock> stocks=generate_stock_list();
         Calendar calendar = Calendar.getInstance();
-        calendar.set(2000,1,1);
+        calendar.set(2000,Calendar.FEBRUARY,3);
         Date from = calendar.getTime();
         Date to = new Date();
 
@@ -248,6 +248,7 @@ public class update_mongodb {
                 .map(mapper)
                 .flatMap(Collection::stream)
                 .map(mapper1)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet())
                 .forEach(x-> {
                     object.put("industry",x.getKey().getIndustry().getIndustryName());
