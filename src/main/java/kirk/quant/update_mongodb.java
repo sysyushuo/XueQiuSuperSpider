@@ -245,10 +245,10 @@ public class update_mongodb {
         Document object=new Document();
         collector.get()
                 .parallelStream()
+                .filter(Objects::nonNull)
                 .map(mapper)
                 .flatMap(Collection::stream)
                 .map(mapper1)
-                .filter(Objects::nonNull)
                 .collect(Collectors.toSet())
                 .forEach(x-> {
                     object.put("industry",x.getKey().getIndustry().getIndustryName());
