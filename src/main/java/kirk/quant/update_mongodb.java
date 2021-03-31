@@ -381,9 +381,9 @@ public class update_mongodb {
         delet_day(collection_name,String.valueOf(zero));
         System.out.println("start to update day ");
         update_day();
-//        System.out.println("start ot update capital flow");
-//        update_capital_flow();
-//        update_stock_attribute();
+        System.out.println("start ot update capital flow");
+        update_capital_flow();
+        update_stock_attribute();
 
 //        update_week();
 //        update_month();
