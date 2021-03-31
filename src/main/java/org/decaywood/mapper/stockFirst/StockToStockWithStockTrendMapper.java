@@ -12,7 +12,6 @@ import org.decaywood.utils.RequestParaBuilder;
 import org.decaywood.utils.URLMapper;
 
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -74,7 +73,7 @@ public class StockToStockWithStockTrendMapper extends AbstractMapper<Stock, Stoc
                 .addParameter("type", "before")
                 .addParameter("begin", from.getTime())
                 .addParameter("end", to.getTime())
-                .addParameter("indicator","kline,macd,ma");
+                .addParameter("indicator","kline,macd,ma,boll");
 
         URL url = new URL(builder.build());
 
@@ -108,10 +107,11 @@ public class StockToStockWithStockTrendMapper extends AbstractMapper<Stock, Stoc
             String dea = jsonNode.get(16).asText();
             String macd = jsonNode.get(18).asText();
             String time = jsonNode.get(0).asText();
-
+            String ub=jsonNode.get(19).asText();
+            String lb=jsonNode.get(20).asText();
             TrendBlock block = new TrendBlock(
                     volume, open, high, close, low, chg, percent, turnrate,
-                    ma5, ma10, ma20, ma30, dif, dea, macd, time);
+                    ma5, ma10, ma20, ma30, dif, dea, macd, time,ub,lb);
             history.add(block);
 
         }

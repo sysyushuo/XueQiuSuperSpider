@@ -45,10 +45,11 @@ public class StockTrend extends Trend<StockTrend.TrendBlock, StockTrend> {
         private final String dea;//DEA
         private final String macd;//MACD
         private final String time;//时间节点
+        private final String ub;//bool 上界
+        private final String lb;//bool 下界
 
 
         /**
-         *
          * @param volume 成交量
          * @param open 开盘价
          * @param high 最高
@@ -65,6 +66,8 @@ public class StockTrend extends Trend<StockTrend.TrendBlock, StockTrend> {
          * @param dea DEA
          * @param macd MACD
          * @param time 时间节点
+         * @param ub1
+         * @param lb1
          */
         public TrendBlock(String volume,
                           String open,
@@ -81,7 +84,9 @@ public class StockTrend extends Trend<StockTrend.TrendBlock, StockTrend> {
                           String dif,
                           String dea,
                           String macd,
-                          String time) {
+                          String time,
+                          String ub,
+                          String lb) {
             this.volume = volume;
             this.open = open;
             this.high = high;
@@ -98,6 +103,8 @@ public class StockTrend extends Trend<StockTrend.TrendBlock, StockTrend> {
             this.dea = dea;
             this.macd = macd;
             this.time = time;
+            this.ub = ub;
+            this.lb = lb;
         }
 
 
@@ -164,6 +171,10 @@ public class StockTrend extends Trend<StockTrend.TrendBlock, StockTrend> {
         public String getTime() {
             return time;
         }
+
+        public String getUb(){return ub;}
+
+        public String getLb(){return lb;}
     }
 
 

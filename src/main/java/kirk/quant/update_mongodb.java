@@ -112,6 +112,8 @@ public class update_mongodb {
                     object.put("time",trend.getTime());
                     object.put("turnrate",trend.getTurnrate());
                     object.put("volume",trend.getVolume());
+                    object.put("bool_up",trend.getUb());
+                    object.put("bool_lower",trend.getLb());
 
                     conn.insertOne( object);
                     object.clear();
@@ -379,9 +381,9 @@ public class update_mongodb {
         delet_day(collection_name,String.valueOf(zero));
         System.out.println("start to update day ");
         update_day();
-        System.out.println("start ot update capital flow");
-        update_capital_flow();
-        update_stock_attribute();
+//        System.out.println("start ot update capital flow");
+//        update_capital_flow();
+//        update_stock_attribute();
 
 //        update_week();
 //        update_month();
